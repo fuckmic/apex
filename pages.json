@@ -1,0 +1,28 @@
+{
+  "pages": [
+    {
+      "path": "pages/_tpl/bnc/home/index",
+      "style": {
+        "enablePullDownRefresh": false,
+        "navigationStyle": "custom"
+      },
+      "meta": {
+        "name": "home",
+        "auth": false,
+        "mode": "reLaunch"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "Apex",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "list": []
+  },
+  "easycom": {
+    "autoscan": true
+  }
+}
