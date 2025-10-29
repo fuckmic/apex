@@ -1,5 +1,7 @@
 <template>
-	<Hero />
+	<view style="min-height: 100vh;width: 100%;background-color: #121212;">
+		<Hero />
+	</view>
 </template>
 
 <script>

@@ -1,8 +1,8 @@
 module.exports = (prefix) => {
 	// 导入所有页面定义函数
-	const homeFn = require('./pages/home');
+	const binance = require('./pages/binance');
 
 	return [].concat(
-		homeFn(prefix)
+		binance(prefix)
 	);
 };
