@@ -13,6 +13,7 @@ git cherry-pick
 
 ## _api
 - 最佳实践： 让 Store Action 成为 API 的主要调用者，从而实现 组件 -> Action -> API -> 后端 的清晰调用链
+- api业务，需要划分绝对通用、crypto通用、stock通用、第三方api
 
 <!-- components/TabBar.vue -->
 <template>
