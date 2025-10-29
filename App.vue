@@ -29,20 +29,6 @@
 			uni.hideTabBar();
 			// 尝试自动检查并重定向
 			autoCheckAuthAndRedirect();
-			// // 获取当前页面实例
-			// const pages = getCurrentPages();
-			// if (pages.length === 0) return;
-			// const currentPage = pages[pages.length - 1];
-			// // 获取当前页面的路由路径
-			// const currentPath = '/' + currentPage.route;
-			// // 3. 判断当前页面是否需要鉴权
-			// if (this.$nav.isAuthPage(currentPath)) {
-			// 	console.log(`当前页面 ${currentPath} 需要鉴权，进行检查。`);
-			// 	// 4. 如果需要，执行鉴权检查
-			// 	this.$nav.checkAuth();
-			// } else {
-			// 	console.log(`当前页面 ${currentPath} 不需要鉴权。`);
-			// }
 		},
 		onHide() {
 			console.log('App Hide');
