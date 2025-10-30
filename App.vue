@@ -18,6 +18,8 @@
 			// this.$store.dispatch('theme/initTheme');
 			// // 非加密币项目，可以注释该行代码。
 			// this.$store.dispatch('crypto/initStable');
+			this.$store.dispatch('lgre/initLgre');
+			this.$store.dispatch('auth/initAuth');
 
 			// // 获取系统信息
 			// const systemInfo = uni.getSystemInfoSync();

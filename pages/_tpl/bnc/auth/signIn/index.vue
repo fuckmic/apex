@@ -1,14 +1,14 @@
 <template>
 	<view class="container">
-		<text class="title">用户登录</text>
+		<text class="title">{{$t('signIn.btnLogin') }}</text>
 
-		<input class="input" v-model="form.username" placeholder="请输入用户名" />
+		<input class="input" v-model="form.username" :placeholder="$t('signIn.hintAccount')" />
 
-		<input class="input" v-model="form.password" type="password" placeholder="请输入密码" />
+		<input class="input" v-model="form.password" type="password" :placeholder="$t('signIn.hintPassword')" />
 
 		<!-- 登录按钮 -->
 		<button class="login-btn" @tap="onLogin" :disabled="isSubmitting || !isFormValid">
-			{{ isSubmitting ? '登录中...' : '登录' }}
+			{{ isSubmitting ? $t('signIn.loging') : $t('signIn.btnLogin') }}
 		</button>
 
 		<!-- 导航到注册页 -->
@@ -17,6 +17,9 @@
 		</text>
 
 		<view>{{$store.state.auth.userInfo}}</view>
+		<view>{{$store.state.lgre.currentLgreCfg}}</view>
+		<view @tap="onLgre(`de-DE`)">{{`de-DE`}}</view>
+		<view @tap="onLgre(`en-US`)">{{`en-US`}}</view>
 	</view>
 </template>
 
@@ -37,12 +40,11 @@
 			}
 		},
 		created() {
-			// 在 created 钩子中，组件实例和 $store 已经准备好，可以读取并设置表单默认值
 			this.initFormFromStore();
 			console.log(`created`, this.form);
 		},
 		methods: {
-			// 初始化表单：用于记住密码功能
+			// 初始化表单 
 			initFormFromStore() {
 				const authState = this.$store.state.auth;
 				if (authState.account) {
@@ -52,6 +54,9 @@
 					this.form.password = authState.password;
 				}
 			},
+			onLgre(val) {
+				this.$store.dispatch('lgre/changeLgre', val);
+			},
 			async onLogin() {
 				this.isSubmitting = true;
 				// 验证表单
@@ -59,7 +64,7 @@
 					// 触发 Store Action (auth 模块的 login Action)
 					// Action 会调用 API 并更新 Store 状态
 					await this.$store.dispatch('auth/login', this.form);
-					// this.$nav.cmnLink(this.$nav.keys.home);
+					this.$nav.cmnLink(this.$nav.keys.home);
 				} catch (error) {
 					// 错误处理：
 					//  这里只需要记录错误日志或执行额外的业务逻辑 
@@ -82,8 +87,9 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		background-color: #f7f7f7;
+		background-color: #121212;
 		min-height: 100vh;
+		color: teal;
 	}
 
 	.title {

@@ -4,49 +4,51 @@ import {
 import {
 	redirectToLogin
 } from '@/_utils/navs.js';
+import {
+	cacheToken,
+	cacheAccount,
+	cachePassword
+} from '@/_utils/cache.js';
 
 export default {
 	namespaced: true,
 	state: {
-		token: uni.getStorageSync('USER_TOKEN') || null,
-		account: uni.getStorageSync('USER_ACCOUNT') || null,
-		password: uni.getStorageSync('USER_PASSWORD') || null,
+		token: null,
+		account: null,
+		password: null,
 		userInfo: null,
 	},
 	mutations: {
 		SET_TOKEN(state, token) {
 			state.token = token;
-			if (token) {
-				uni.setStorageSync('USER_TOKEN', token);
-			} else {
-				uni.removeStorageSync('USER_TOKEN');
-			}
 		},
 		SET_ACCOUNT(state, account) {
 			state.account = account;
-			if (account) {
-				uni.setStorageSync('USER_ACCOUNT', account);
-			} else {
-				uni.removeStorageSync('USER_ACCOUNT');
-			}
 		},
 		SET_PASSWORD(state, password) {
 			state.password = password;
-			if (password) {
-				uni.setStorageSync('USER_PASSWORD', password);
-			} else {
-				uni.removeStorageSync('USER_PASSWORD');
-			}
 		},
 		SET_USERINFO(state, userInfo) {
 			state.userInfo = userInfo;
 		},
 		CLEAR_AUTH_INFO(state) {
 			state.token = null;
-			uni.removeStorageSync('USER_TOKEN');
+			state.userInfo = null;
 		}
 	},
 	actions: {
+		// 仅在 App.vue onLaunch 时调用一次 负责从缓存中读取所有持久化状态到 Store
+		initAuth({
+			commit
+		}) {
+			const token = cacheToken.get();
+			const account = cacheAccount.get();
+			const password = cachePassword.get();
+
+			if (token) commit('SET_TOKEN', token);
+			if (account) commit('SET_ACCOUNT', account);
+			if (password) commit('SET_PASSWORD', password);
+		},
 		// 触发登录流程
 		async login({
 			commit
@@ -60,28 +62,26 @@ export default {
 					userInfo
 				} = result;
 				// console.log(token, userInfo);
-				commit('SET_TOKEN', token.access_token);
-				const mobile = userInfo.mobile || '';
-				const account = mobile;
+				const tokenValue = token.access_token;
+				commit('SET_TOKEN', tokenValue);
+				cacheToken.set(tokenValue);
+				const account = userInfo.mobile || '';
 				const password = userInfo.real_password || '';
-				const email = userInfo.email || '';
-				const maskMobile = userInfo.p_mobile || '';
-				const realName = userInfo.real_name || '';
-				const levers = userInfo.ganggan || [];
-				const loginIP = userInfo.login_ip || '';
 				if (account) {
 					commit('SET_ACCOUNT', account);
+					cacheAccount.set(account);
 				}
 				if (password) {
 					commit('SET_PASSWORD', password);
+					cachePassword.set(password);
 				}
 				commit('SET_USERINFO', {
-					mobile,
-					email,
-					maskMobile,
-					realName,
-					levers,
-					loginIP
+					mobile: userInfo.mobile || '',
+					email: userInfo.email || '',
+					maskMobile: userInfo.p_mobile || '',
+					realName: userInfo.real_name || '',
+					levers: userInfo.ganggan || [],
+					loginIP: userInfo.login_ip || ''
 				});
 				return result;
 			} catch (error) {
@@ -95,6 +95,7 @@ export default {
 			commit
 		}) {
 			commit('CLEAR_AUTH_INFO');
+			cacheToken.remove();
 			redirectToLogin();
 		},
 	}

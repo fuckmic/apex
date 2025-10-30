@@ -5,11 +5,14 @@ import {
 import {
 	redirectToLogin
 } from '@/_utils/navs';
+import {
+	t
+} from '@/_utils/i18n.js';
 
 const HTTP_STATUS = {
 	SUCCESS: 200,
-	UNAUTHORIZED: 401, // 未授权
-	FORBIDDEN: 403, // 禁止访问
+	UNAUTHORIZED: 401,
+	FORBIDDEN: 403,
 	SERVER_ERROR: 500,
 };
 
@@ -47,20 +50,20 @@ const checkNetworkPromise = () => new Promise((resolve, reject) => {
 		success(res) {
 			if (res.networkType === 'none') {
 				uni.showToast({
-					title: t('services.networkFail'),
+					title: t('api.networkFail'),
 					icon: 'none'
 				});
-				reject(new Error(t('services.networkFail1')));
+				reject(new Error(t('api.networkFail')));
 			} else {
 				resolve();
 			}
 		},
 		fail() {
 			uni.showToast({
-				title: t('services.networkFail'),
+				title: t('api.networkFail'),
 				icon: 'none'
 			});
-			reject(new Error(t('services.networkFail1')));
+			reject(new Error(t('api.networkFail')));
 		},
 	});
 });
@@ -100,7 +103,7 @@ request.useRequest(async (options) => {
 
 	// 3. 加载遮罩
 	if (!options.hide) {
-		const title = typeof options.title === 'string' ? options.title : t('services.loading');
+		const title = typeof options.title === 'string' ? options.title : t('api.loading');
 		uni.showLoading({
 			title: title,
 			mask: true
@@ -122,12 +125,12 @@ request.useResponse((res) => {
 		console.error(`[API Error] HTTP Status ${res.statusCode}: Unauthorized/Forbidden.`);
 		store.dispatch('auth/logout');
 		redirectToLogin();
-		return Promise.reject(new Error(t('services.unauthorized')));
+		return Promise.reject(new Error(t('api.unauthorized')));
 	}
 	// 2. 非 200 错误
 	else if (res.statusCode !== HTTP_STATUS.SUCCESS) {
 		uni.showToast({
-			title: `${t('services.httpError')}: ${res.statusCode}`,
+			title: `${t('api.httpError')}: ${res.statusCode}`,
 			icon: 'none',
 		});
 		return Promise.reject(new Error(`HTTP Error: ${res.statusCode}`));
@@ -140,12 +143,12 @@ request.useResponse((res) => {
 		console.error(`[API Error] Business Code 999: Token Expired.`);
 		store.dispatch('auth/logout');
 		redirectToLogin();
-		return Promise.reject(new Error(response.message || t('services.unauthorized')));
+		return Promise.reject(new Error(response.message || t('api.unauthorized')));
 	}
 
 	// 其他业务错误
 	uni.showToast({
-		title: response.message || t('services.requestFail'),
+		title: response.message || t('api.requestFail'),
 		icon: 'none',
 	});
 	return Promise.reject(response);
@@ -159,7 +162,7 @@ request.useResponse(null, (error) => {
 	// uni.request 错误 (网络层错误，如超时)
 	if (error && error.errMsg) {
 		uni.showToast({
-			title: error.errMsg || t('services.requestFail'),
+			title: error.errMsg || t('api.requestFail'),
 			icon: 'none',
 		});
 	}
@@ -262,12 +265,12 @@ request.upload = (url, filePath, name = 'file', formData = {}, options = {}) => 
 	return new Promise(async (resolve, reject) => {
 		// 使用修正后的 request.checkNetwork()
 		if (!await request.checkNetwork()) {
-			return reject(new Error(t('services.networkFail1')));
+			return reject(new Error(t('api.networkFail')));
 		}
 
 		let isLoadingShown = false;
 		if (!options.hide) {
-			const title = typeof options.title === 'string' ? options.title : t('services.loading');
+			const title = typeof options.title === 'string' ? options.title : t('api.loading');
 			uni.showLoading({
 				title,
 				mask: true
@@ -292,7 +295,7 @@ request.upload = (url, filePath, name = 'file', formData = {}, options = {}) => 
 							data: responseData
 						}).then(resolve).catch(reject);
 					} catch (e) {
-						reject(new Error(t('services.requestFail')));
+						reject(new Error(t('api.requestFail')));
 					}
 				} else {
 					// 非 200 状态，直接拒绝
@@ -331,7 +334,7 @@ request.download = (url, options = {}) => {
 					redirectToLogin();
 					reject({
 						code: res.statusCode,
-						msg: t('services.unauthorized')
+						msg: t('api.unauthorized')
 					});
 				} else {
 					reject({
@@ -360,10 +363,10 @@ function handleUploadResponse(res) {
 	if (response.code === 999) {
 		store.dispatch('auth/logout');
 		redirectToLogin();
-		return Promise.reject(new Error(response.message || t('services.unauthorized')));
+		return Promise.reject(new Error(response.message || t('api.unauthorized')));
 	}
 	uni.showToast({
-		title: response.message || t('services.requestFail'),
+		title: response.message || t('api.requestFail'),
 		icon: 'none',
 	});
 	return Promise.reject(response);
